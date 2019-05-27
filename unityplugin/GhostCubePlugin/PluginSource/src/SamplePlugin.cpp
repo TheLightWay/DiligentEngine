@@ -155,7 +155,7 @@ void SamplePlugin::Render(Diligent::IDeviceContext *pContext, const float4x4 &Vi
 {
     {
         MapHelper<float4x4> CBConstants(pContext, m_VSConstants, MAP_WRITE, MAP_FLAG_DISCARD);
-        *CBConstants = transposeMatrix(ViewProjMatrix);
+        *CBConstants = ViewProjMatrix.Transpose();
     }
 
     Uint32 offset = 0;
@@ -166,6 +166,6 @@ void SamplePlugin::Render(Diligent::IDeviceContext *pContext, const float4x4 &Vi
     pContext->SetPipelineState(m_PSO);
     pContext->CommitShaderResources(m_SRB, RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
 
-    DrawAttribs DrawAttrs(36, VT_UINT32, DRAW_FLAG_VERIFY_STATES);
+    DrawAttribs DrawAttrs(36, VT_UINT32, DRAW_FLAG_VERIFY_ALL);
     pContext->Draw(DrawAttrs);
 }

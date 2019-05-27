@@ -27,7 +27,6 @@
 #include "pch.h"
 #include "TestGeometryShader.h"
 #include "MapHelper.h"
-#include "BasicShaderSourceStreamFactory.h"
 
 using namespace Diligent;
 
@@ -42,8 +41,9 @@ void TestGeometryShader::Init( IRenderDevice *pDevice, IDeviceContext *pDeviceCo
     m_pDeviceContext = pDeviceContext;
 
     ShaderCreateInfo CreationAttrs;
-    BasicShaderSourceStreamFactory BasicSSSFactory;
-    CreationAttrs.pShaderSourceStreamFactory = &BasicSSSFactory;
+    RefCntAutoPtr<IShaderSourceInputStreamFactory> pShaderSourceFactory;
+    pDevice->GetEngineFactory()->CreateDefaultShaderSourceStreamFactory(nullptr, &pShaderSourceFactory);
+    CreationAttrs.pShaderSourceStreamFactory = pShaderSourceFactory;
     CreationAttrs.SourceLanguage = SHADER_SOURCE_LANGUAGE_HLSL;
     CreationAttrs.UseCombinedTextureSamplers = true;
 
@@ -91,7 +91,7 @@ void TestGeometryShader::Draw()
     m_pDeviceContext->CommitShaderResources(nullptr, RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
     
     // Draw 2 triangles
-    Diligent::DrawAttribs DrawAttrs(2, DRAW_FLAG_VERIFY_STATES);
+    Diligent::DrawAttribs DrawAttrs(2, DRAW_FLAG_VERIFY_ALL);
     m_pDeviceContext->Draw(DrawAttrs);
     
     SetStatus(TestResult::Succeeded);

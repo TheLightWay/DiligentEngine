@@ -28,7 +28,6 @@
 #include <math.h>
 #include "TestTexturing.h"
 #include "GraphicsUtilities.h"
-#include "BasicShaderSourceStreamFactory.h"
 #include "ShaderMacroHelper.h"
 
 using namespace Diligent;
@@ -168,8 +167,9 @@ void TestTexturing::Init( IRenderDevice *pDevice, IDeviceContext *pDeviceContext
     auto PixelFormatAttribs = m_pRenderDevice->GetTextureFormatInfoExt(m_TextureFormat);
 
     ShaderCreateInfo CreationAttrs;
-    BasicShaderSourceStreamFactory BasicSSSFactory;
-    CreationAttrs.pShaderSourceStreamFactory = &BasicSSSFactory;
+    RefCntAutoPtr<IShaderSourceInputStreamFactory> pShaderSourceFactory;
+    pDevice->GetEngineFactory()->CreateDefaultShaderSourceStreamFactory("Shaders", &pShaderSourceFactory);
+    CreationAttrs.pShaderSourceStreamFactory = pShaderSourceFactory;
     CreationAttrs.Desc.TargetProfile = bUseGLSL ? SHADER_PROFILE_GL_4_2 : SHADER_PROFILE_DX_5_0;
     CreationAttrs.UseCombinedTextureSamplers = true;
 
@@ -313,7 +313,7 @@ void TestTexturing::Draw()
     m_pDeviceContext->SetVertexBuffers( 0, 1, pBuffs, Offsets, RESOURCE_STATE_TRANSITION_MODE_TRANSITION, SET_VERTEX_BUFFERS_FLAG_RESET );
 
     // Draw quad
-    Diligent::DrawAttribs DrawAttrs(4, DRAW_FLAG_VERIFY_STATES);
+    Diligent::DrawAttribs DrawAttrs(4, DRAW_FLAG_VERIFY_ALL);
     m_pDeviceContext->Draw( DrawAttrs );
     
     SetStatus(TestResult::Succeeded);

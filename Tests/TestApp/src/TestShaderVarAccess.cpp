@@ -26,7 +26,6 @@
 
 #include "pch.h"
 #include "TestShaderVarAccess.h"
-#include "BasicShaderSourceStreamFactory.h"
 #include "GraphicsAccessories.h"
 #include "../../../DiligentCore/Graphics/GraphicsEngineD3DBase/interface/ShaderD3D.h"
 
@@ -64,8 +63,9 @@ TestShaderVarAccess::TestShaderVarAccess( IRenderDevice *pDevice, IDeviceContext
         return;
 
     ShaderCreateInfo CreationAttrs;
-    BasicShaderSourceStreamFactory BasicSSSFactory("Shaders");
-    CreationAttrs.pShaderSourceStreamFactory = &BasicSSSFactory;
+    RefCntAutoPtr<IShaderSourceInputStreamFactory> pShaderSourceFactory;
+    pDevice->GetEngineFactory()->CreateDefaultShaderSourceStreamFactory("Shaders", &pShaderSourceFactory);
+    CreationAttrs.pShaderSourceStreamFactory = pShaderSourceFactory;
     CreationAttrs.EntryPoint = "main";
     CreationAttrs.UseCombinedTextureSamplers = true;
 
@@ -611,7 +611,7 @@ TestShaderVarAccess::TestShaderVarAccess( IRenderDevice *pDevice, IDeviceContext
     pContext->SetPipelineState(pTestPSO);
     pContext->CommitShaderResources(pSRB, RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
     
-    DrawAttribs DrawAttrs(3, DRAW_FLAG_VERIFY_STATES);
+    DrawAttribs DrawAttrs(3, DRAW_FLAG_VERIFY_ALL);
     pContext->Draw(DrawAttrs);
 
     pSRB->GetVariableByName(SHADER_TYPE_PIXEL, "g_rwtex2D_Dyn")->Set(pTexUAVs[7]);

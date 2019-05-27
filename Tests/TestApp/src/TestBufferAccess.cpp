@@ -28,7 +28,6 @@
 #include <math.h>
 #include "TestBufferAccess.h"
 #include "MapHelper.h"
-#include "BasicShaderSourceStreamFactory.h"
 
 using namespace Diligent;
 
@@ -113,8 +112,9 @@ void TestBufferAccess::Init( IRenderDevice *pDevice, IDeviceContext *pContext, I
     }
 
     ShaderCreateInfo CreationAttrs;
-    BasicShaderSourceStreamFactory BasicSSSFactory;
-    CreationAttrs.pShaderSourceStreamFactory = &BasicSSSFactory;
+    RefCntAutoPtr<IShaderSourceInputStreamFactory> pShaderSourceFactory;
+    pDevice->GetEngineFactory()->CreateDefaultShaderSourceStreamFactory(nullptr, &pShaderSourceFactory);
+    CreationAttrs.pShaderSourceStreamFactory = pShaderSourceFactory;
     CreationAttrs.Desc.TargetProfile = bUseGLSL ? SHADER_PROFILE_GL_4_2 : SHADER_PROFILE_DX_5_0;
     CreationAttrs.UseCombinedTextureSamplers = true;
 
@@ -168,7 +168,7 @@ void TestBufferAccess::Draw(float fTime)
     Uint32 Offsets[_countof( pBuffs )] = {0, 0, 0, 0, 0};
     m_pDeviceContext->SetVertexBuffers( 0, _countof( pBuffs ), pBuffs, Offsets, RESOURCE_STATE_TRANSITION_MODE_TRANSITION, SET_VERTEX_BUFFERS_FLAG_RESET );
     
-    DrawAttribs DrawAttrs(3, DRAW_FLAG_VERIFY_STATES);
+    DrawAttribs DrawAttrs(3, DRAW_FLAG_VERIFY_ALL);
     DrawAttrs.NumVertices = 3;
     DrawAttrs.NumInstances = NumInstances;
     m_pDeviceContext->Draw(DrawAttrs);

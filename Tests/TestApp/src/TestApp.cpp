@@ -65,6 +65,7 @@
     #include "ShaderConverterTest.h"
 #endif
 #include "TestCopyTexData.h"
+#include "TestMipMapsGeneration.h"
 #include "PlatformMisc.h"
 #include "TestBufferCreation.h"
 #include "TestBrokenShader.h"
@@ -416,6 +417,7 @@ void TestApp::InitializeRenderers()
         }
 
     TestCopyTexData TestCopyData(m_pDevice, m_pImmediateContext);
+    TestMipMapsGeneration TestMipsGen(m_pDevice, m_pImmediateContext);
 
     TestVPAndSR TestVPAndSR(m_pDevice, m_pImmediateContext);
 
@@ -552,7 +554,7 @@ void TestApp::InitializeRenderers()
         m_pImmediateContext->ClearRenderTarget(nullptr, ClearColor, RESOURCE_STATE_TRANSITION_MODE_VERIFY);
         DrawAttribs DrawAttrs;
         DrawAttrs.NumVertices = 3;
-        DrawAttrs.Flags = DRAW_FLAG_VERIFY_STATES;
+        DrawAttrs.Flags = DRAW_FLAG_VERIFY_ALL;
         m_pRenderScript->Run(m_pImmediateContext, "DrawTris", DrawAttrs);
         
         // This adds transition barrier for pTex1
@@ -688,14 +690,14 @@ void TestApp::Render()
 
     DrawAttribs DrawAttrs;
     DrawAttrs.NumVertices = 3;
-    DrawAttrs.Flags = DRAW_FLAG_VERIFY_STATES;
+    DrawAttrs.Flags = DRAW_FLAG_VERIFY_ALL;
     m_pRenderScript->Run(m_pImmediateContext, "DrawTris", DrawAttrs);
 
     DrawAttrs.IsIndexed = true;
     DrawAttrs.NumIndices = 3;
     DrawAttrs.IndexType = VT_UINT32;
     DrawAttrs.NumInstances = 3;
-    DrawAttrs.Flags = DRAW_FLAG_VERIFY_STATES;
+    DrawAttrs.Flags = DRAW_FLAG_VERIFY_ALL;
     m_pRenderScript->Run(m_pImmediateContext, "DrawTris", DrawAttrs);
     m_pTestDrawCommands->Draw();
     m_pTestBufferAccess->Draw((float)dCurrTime);

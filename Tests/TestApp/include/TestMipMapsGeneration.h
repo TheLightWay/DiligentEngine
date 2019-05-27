@@ -21,4 +21,12 @@
  *  of the possibility of such damages.
  */
 
-#include "DiligentCore/Graphics/GraphicsTools/include/BasicShaderSourceStreamFactory.h"
+#pragma once
+
+#include "UnitTestBase.h"
+
+class TestMipMapsGeneration : public UnitTestBase
+{
+public:
+    TestMipMapsGeneration(Diligent::IRenderDevice *pDevice, Diligent::IDeviceContext *pContext);
+};

@@ -27,7 +27,6 @@
 #include "pch.h"
 #include "TestShaderResArrays.h"
 #include "GraphicsUtilities.h"
-#include "BasicShaderSourceStreamFactory.h"
 #include "TestTexturing.h"
 
 using namespace Diligent;
@@ -39,8 +38,9 @@ TestShaderResArrays::TestShaderResArrays(IRenderDevice *pDevice, IDeviceContext 
     m_pDeviceContext = pDeviceContext;
     
     ShaderCreateInfo CreationAttrs;
-    BasicShaderSourceStreamFactory BasicSSSFactory;
-    CreationAttrs.pShaderSourceStreamFactory = &BasicSSSFactory;
+    RefCntAutoPtr<IShaderSourceInputStreamFactory> pShaderSourceFactory;
+    pDevice->GetEngineFactory()->CreateDefaultShaderSourceStreamFactory(nullptr, &pShaderSourceFactory);
+    CreationAttrs.pShaderSourceStreamFactory = pShaderSourceFactory;
     CreationAttrs.Desc.TargetProfile = SHADER_PROFILE_DX_5_0;
     CreationAttrs.UseCombinedTextureSamplers = true;
 
@@ -189,7 +189,7 @@ void TestShaderResArrays::Draw()
     m_pDeviceContext->SetVertexBuffers( 0, 1, pBuffs, Offsets, RESOURCE_STATE_TRANSITION_MODE_TRANSITION, SET_VERTEX_BUFFERS_FLAG_RESET );
 
     // Draw a quad
-    Diligent::DrawAttribs DrawAttrs(4, DRAW_FLAG_VERIFY_STATES);
+    Diligent::DrawAttribs DrawAttrs(4, DRAW_FLAG_VERIFY_ALL);
     m_pDeviceContext->Draw( DrawAttrs );
     
     SetStatus(TestResult::Succeeded);
