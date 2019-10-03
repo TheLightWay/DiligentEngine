@@ -1,4 +1,4 @@
-/*     Copyright 2015-2019 Egor Yusov
+/*     Copyright 2019 Diligent Graphics LLC
  *  
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -643,6 +643,25 @@ public:
                 VERIFY_EXPR(m == m1*m2);
             }
         }
+        
+        {
+            VERIFY_EXPR(float2(1,2).Recast<int>() == Vector2<int>(1,2));
+            VERIFY_EXPR(float3(1,2,3).Recast<int>() == Vector3<int>(1,2,3));
+            VERIFY_EXPR(float4(1,2,3,4).Recast<int>() == Vector4<int>(1,2,3,4));
+        }
+
+        {
+            VERIFY_EXPR(std::floor(float2(0.1f, 1.2f)) == float2(0,1));
+            VERIFY_EXPR(std::floor(float3(0.1f, 1.2f, 2.3f)) == float3(0,1,2));
+            VERIFY_EXPR(std::floor(float4(0.1f, 1.2f, 2.3f, 3.4f)) == float4(0,1,2,3));
+            VERIFY_EXPR(std::ceil(float2(0.1f, 1.2f)) == float2(1,2));
+            VERIFY_EXPR(std::ceil(float3(0.1f, 1.2f, 2.3f)) == float3(1,2,3));
+            VERIFY_EXPR(std::ceil(float4(0.1f, 1.2f, 2.3f, 3.4f)) == float4(1,2,3,4));
+        }
+
+        HermiteSpline(float3(1,2,3), float3(4,5,6), float3(7,8,9), float3(10, 11, 12), 0.1f);
+        HermiteSpline(double3(1,2,3), double3(4,5,6), double3(7,8,9), double3(10, 11, 12), 0.1);
+
         SetStatus(TestResult::Succeeded);
     }
 };

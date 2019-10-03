@@ -56,8 +56,6 @@ It is distributed under [Apache 2.0 license](License.txt) and is free to use.
 | <img src="https://github.com/DiligentGraphics/DiligentCore/blob/master/media/macos-logo.png" width=24 valign="middle"> MacOS                    | OpenGL4.1, Vulkan (via [MoltenVK](https://github.com/KhronosGroup/MoltenVK)) | [![Build Status](https://travis-ci.org/DiligentGraphics/DiligentEngine.svg?branch=master)](https://travis-ci.org/DiligentGraphics/DiligentEngine) |
 | <img src="https://github.com/DiligentGraphics/DiligentCore/blob/master/media/apple-logo.png" width=24 valign="middle"> iOS                      | OpenGLES3.0, Vulkan (via [MoltenVK](https://github.com/KhronosGroup/MoltenVK)) | [![Build Status](https://travis-ci.org/DiligentGraphics/DiligentEngine.svg?branch=master)](https://travis-ci.org/DiligentGraphics/DiligentEngine)      |
 
-Last Stable Release - [v2.4.b](https://github.com/DiligentGraphics/DiligentEngine/releases/tag/v2.4.b)
-
 # Table of Contents
 
 - [Clonning the Repository](#clonning)
@@ -77,6 +75,7 @@ Last Stable Release - [v2.4.b](https://github.com/DiligentGraphics/DiligentEngin
 - [Samples](#samples)
 - [Demos](#demos)
 - [High-Level Rendering Components](#high_level_components)
+- [License](#license)
 - [Contributing](#contributing)
 - [References](#references)
 - [Release History](#release_history)
@@ -90,16 +89,10 @@ This is the master repository that contains four [submodules](https://git-scm.co
 git clone --recursive https://github.com/DiligentGraphics/DiligentEngine.git
 ```
 
-To checkout the last stable release, run the following commands:
-
-```
-git checkout tags/v2.4.a
-git submodule update --init --recursive
-```
-
 When updating existing repository, don't forget to update all submodules:
 
 ```
+git pull
 git submodule update --recursive
 ```
 
@@ -131,29 +124,29 @@ Master repository includes the following submodules:
 
 Diligent Engine uses [CMake](https://cmake.org/) as a cross-platform build tool. 
 To start using cmake, download the [latest release](https://cmake.org/download/) (3.13 or later is required).
-Another build prerequisite is [Python interpreter](https://www.python.org/downloads/).
+Another build prerequisite is [Python interpreter](https://www.python.org/downloads/) (3.0 or later is required).
 
 <a name="build_and_run_win32"></a>
 ## Win32
 
 To generate build files for Windows desktop platform, use either CMake GUI or command line tool. For example, to generate 
-[Visual Studio 2017](https://www.visualstudio.com/vs/community) 64-bit solution and project files in *cmk_build/Win64* folder, 
+[Visual Studio 2017](https://www.visualstudio.com/vs/community) 64-bit solution and project files in *build/Win64* folder, 
 navigate to the engine's root folder and run the following command:
 
 ```
-cmake -H. -B./cmk_build/Win64 -G "Visual Studio 15 2017 Win64"
+cmake -S . -B ./build/Win64 -G "Visual Studio 15 2017 Win64"
 ```
 
 You can generate Win32 solution that targets Win8.1 SDK using the following command:
 
 ```
-cmake -D CMAKE_SYSTEM_VERSION=8.1 -H. -B./cmk_build/Win64 -G "Visual Studio 15 2017 Win64"
+cmake -D CMAKE_SYSTEM_VERSION=8.1 -S . -B ./build/Win64 -G "Visual Studio 15 2017 Win64"
 ```
 
-If you use MinGW, you can generate the make files using the command below:
+If you use MinGW, you can generate the make files using the command below (please be aware of some [known build issues](https://github.com/DiligentGraphics/DiligentEngine/issues/31)):
 
 ```
-cmake -H. -B./cmk_build/MinGW -G "MinGW Makefiles"
+cmake -S . -B ./build/MinGW -G "MinGW Makefiles"
 ```
 
 **WARNING!** In current implementation, full path to cmake build folder **must not contain white spaces**.
@@ -163,7 +156,7 @@ variable `VK_LAYER_PATH` that contains path to the *Bin* directory in VulkanSDK 
 
 Make sure that Visual C++ ATL Support is installed via Visual Studio Installer.
 
-Open *DiligentEngine.sln* file in *cmk_build/Win64* folder, select configuration and build the engine. Set the desired project
+Open *DiligentEngine.sln* file in *build/Win64* folder, select configuration and build the engine. Set the desired project
 as startup project (by default, GLTF Viewer will be selected) and run it. 
 
 By default, sample and tutorial applications will show rendering backend selection dialog box. Use the following command line options to force
@@ -180,17 +173,17 @@ To generate build files for Universal Windows platform, you need to define the f
 * `CMAKE_SYSTEM_NAME=WindowsStore`
 * `CMAKE_SYSTEM_VERSION=< Windows SDK Version >`
 
-For example, to generate Visual Studio 2017 64-bit solution and project files in *cmk_build/UWP64* folder, run the following command
+For example, to generate Visual Studio 2017 64-bit solution and project files in *build/UWP64* folder, run the following command
 from the engine's root folder:
 
 ```
-cmake -D CMAKE_SYSTEM_NAME=WindowsStore -D CMAKE_SYSTEM_VERSION=10.0 -H. -B./cmk_build/UWP64 -G "Visual Studio 15 2017 Win64"
+cmake -D CMAKE_SYSTEM_NAME=WindowsStore -D CMAKE_SYSTEM_VERSION=10.0 -S . -B ./build/UWP64 -G "Visual Studio 15 2017 Win64"
 ```
 
 You can target specific SDK version by refining CMAKE_SYSTEM_VERSION, for instance:
 
 ```
-cmake -D CMAKE_SYSTEM_NAME=WindowsStore -D CMAKE_SYSTEM_VERSION=10.0.16299.0 -H. -B./cmk_build/UWP64 -G "Visual Studio 15 2017 Win64"
+cmake -D CMAKE_SYSTEM_NAME=WindowsStore -D CMAKE_SYSTEM_VERSION=10.0.16299.0 -S . -B ./build/UWP64 -G "Visual Studio 15 2017 Win64"
 ```
 
 Set the desired project as startup project (by default, GLTF Viewer will be selected) and run it. 
@@ -240,13 +233,13 @@ To configure Vulkan you will also need to:
 To generate make files for debug configuration, run the following CMake command from the engine's root folder:
 
 ```
-cmake -H. -B./cmk_build/Linux64 -G "Unix Makefiles" -DCMAKE_BUILD_TYPE="Debug"
+cmake -S . -B ./build/Linux64 -G "Unix Makefiles" -DCMAKE_BUILD_TYPE="Debug"
 ```
 
 To build the engine, run the following command:
 
 ```
-cmake --build ./cmk_build/Linux64
+cmake --build ./build/Linux64
 ```
 
 The engine's root folder contains [Visual Studio Code](https://code.visualstudio.com/) settings files that configure
@@ -273,10 +266,10 @@ After you clone the repo, run the following command from the engine's root folde
 (you need to have [CMake](https://cmake.org/) installed on the system):
 
 ```
-cmake -H. -B./cmk_build/MacOS -G "Xcode"
+cmake -S . -B ./build/MacOS -G "Xcode"
 ```
 
-The project will be located in `cmk_build/MacOS` folder.
+The project will be located in `build/MacOS` folder.
 
 ### Configuring Vulkan Build Environment
 
@@ -315,10 +308,10 @@ Run the command below from the engine's root folder to generate Xcode project co
 (you need to have [CMake](https://cmake.org/) installed on your Mac):
 
 ```cmake
-cmake -DCMAKE_TOOLCHAIN_FILE=DiligentCore/ios.toolchain.cmake -DIOS_PLATFORM=OS64 -H. -Bcmk_build/IOS -GXcode
+cmake -DCMAKE_TOOLCHAIN_FILE=DiligentCore/ios.toolchain.cmake -DIOS_PLATFORM=OS64 -H. -Bbuild/IOS -GXcode
 ```
 
-Open Xcode project file in `cmk_build/IOS` folder and build the engine. To run the applications on an iOS device,
+Open Xcode project file in `build/IOS` folder and build the engine. To run the applications on an iOS device,
 you will need to set appropriate development team in the project settings.
 
 ### Configuring Vulkan Build Environment
@@ -330,7 +323,7 @@ To enable Vulkan in Diligent Engine on iOS, specify the path to Vulkan SDK when 
 that Vulkan SDK is installed at `/LunarG/vulkansdk-macos`):
 
 ```cmake
-cmake -DCMAKE_TOOLCHAIN_FILE=DiligentCore/ios.toolchain.cmake -DIOS_PLATFORM=OS64 -DIOS_ARCH=arm64 -DVULKAN_SDK=/LunarG/vulkansdk-macos -H. -Bcmk_build/IOS -GXcode
+cmake -DCMAKE_TOOLCHAIN_FILE=DiligentCore/ios.toolchain.cmake -DIOS_PLATFORM=OS64 -DIOS_ARCH=arm64 -DVULKAN_SDK=/LunarG/vulkansdk-macos -H. -Bbuild/IOS -GXcode
 ```
 
 Xcode project [cannot be completely configured by CMake](https://github.com/DiligentGraphics/DiligentSamples/issues/9).
@@ -376,11 +369,12 @@ add_executable(HelloDiligent WIN32 HelloDiligent.cpp)
 target_compile_options(HelloDiligent PRIVATE -DUNICODE -DENGINE_DLL)
 target_include_directories(HelloDiligent PRIVATE "DiligentCore")
 
-add_dependencies(HelloDiligent
-    GraphicsEngineD3D11-shared
-    GraphicsEngineOpenGL-shared
-    GraphicsEngineD3D12-shared
-    GraphicsEngineVk-shared
+target_link_libraries(HelloDiligent
+PRIVATE
+    Diligent-GraphicsEngineD3D11-shared
+    Diligent-GraphicsEngineOpenGL-shared
+    Diligent-GraphicsEngineD3D12-shared
+    Diligent-GraphicsEngineVk-shared
 )
 copy_required_dlls(HelloDiligent)
 ```
@@ -406,7 +400,7 @@ to `/usr/local` on UNIX and `c:/Program Files/${PROJECT_NAME}` on Windows, which
 Use `-D CMAKE_INSTALL_PREFIX=install` to use local `install` folder instead:
 
 ```
-cmake -H. -B./cmk_build/Win64 -D CMAKE_INSTALL_PREFIX=install -G "Visual Studio 15 2017 Win64"
+cmake -S . -B ./build/Win64 -D CMAKE_INSTALL_PREFIX=install -G "Visual Studio 15 2017 Win64"
 ```
 
 To install libraries and header files, run the following CMake command from the build folder:
@@ -447,7 +441,7 @@ use the following options: `DILIGENT_NO_DIRECT3D11`, `DILIGENT_NO_DIRECT3D12`, `
 The options can be set through cmake UI or from the command line as in the example below:
 
 ```
-cmake -D DILIGENT_NO_DIRECT3D11=TRUE -H. -B./cmk_build/Win64 -G "Visual Studio 15 2017 Win64"
+cmake -D DILIGENT_NO_DIRECT3D11=TRUE -S . -B ./build/Win64 -G "Visual Studio 15 2017 Win64"
 ```
 
 Additionally, individual engine components can be enabled or disabled using the following options:
@@ -472,7 +466,7 @@ The path to the configuration script should be provided through `BUILD_CONFIGURA
 cmake and must be relative to the cmake root folder, for example:
 
 ```
-cmake -D BUILD_CONFIGURATION_FILE=BuildConfig.cmake -H. -B./cmk_build/Win64 -G "Visual Studio 15 2017 Win64"
+cmake -D BUILD_CONFIGURATION_FILE=BuildConfig.cmake -S . -B ./build/Win64 -G "Visual Studio 15 2017 Win64"
 ```
 
 ### Customizing global build settings with custom_configure_build() function
@@ -583,6 +577,9 @@ Please refer to [this page](https://github.com/DiligentGraphics/DiligentCore#api
 | [10 - Data Streaming](https://github.com/DiligentGraphics/DiligentSamples/blob/master/Tutorials/Tutorial10_DataStreaming) | ![](https://github.com/DiligentGraphics/DiligentSamples/blob/master/Tutorials/Tutorial10_DataStreaming/Animation_Small.gif) | This tutorial shows dynamic buffer mapping strategy using `MAP_FLAG_DISCARD` and `MAP_FLAG_DO_NOT_SYNCHRONIZE` flags to efficiently stream varying amounts of data to GPU. |
 | [11 - Resource Updates](https://github.com/DiligentGraphics/DiligentSamples/tree/master/Tutorials/Tutorial11_ResourceUpdates) | ![](https://github.com/DiligentGraphics/DiligentSamples/blob/master/Tutorials/Tutorial11_ResourceUpdates/Animation_Small.gif) | This tutorial demonstrates different ways to update buffers and textures in Diligent Engine and explains important internal details and performance implications related to each method. |
 | [12 - Render Target](https://github.com/DiligentGraphics/DiligentSamples/tree/master/Tutorials/Tutorial12_RenderTarget) | ![](https://github.com/DiligentGraphics/DiligentSamples/blob/master/Tutorials/Tutorial12_RenderTarget/Animation_Small.gif) | This tutorial demonstrates how to render a 3d cube into an offscreen render target and do a simple post-processing effect. |
+| [13 - Shadow Map](https://github.com/DiligentGraphics/DiligentSamples/tree/master/Tutorials/Tutorial13_ShadowMap) | ![](https://github.com/DiligentGraphics/DiligentSamples/blob/master/Tutorials/Tutorial13_ShadowMap/Animation_Small.gif) | This tutorial demonstrates how to render basic shadows using a shadow map. |
+| [14 - Compute Shader](https://github.com/DiligentGraphics/DiligentSamples/tree/master/Tutorials/Tutorial14_ComputeShader) | ![](https://github.com/DiligentGraphics/DiligentSamples/blob/master/Tutorials/Tutorial14_ComputeShader/Animation_Small.gif) | This tutorial shows how to implement a simple particle simulation system using compute shaders. |
+| [15 - Multiple Windows](https://github.com/DiligentGraphics/DiligentSamples/tree/master/Tutorials/Tutorial15_MultipleWindows) | ![](https://github.com/DiligentGraphics/DiligentSamples/blob/master/Tutorials/Tutorial15_MultipleWindows/Screenshot.png) | This tutorial demonstrates how to use Diligent Engine to render to multiple windows. |
 
 
 <a name="samples"></a>
@@ -590,9 +587,10 @@ Please refer to [this page](https://github.com/DiligentGraphics/DiligentCore#api
 
 | Sample     | Screenshot  | Description          |
 |------------|-------------|----------------------|
-| [AntTweakBar Sample](https://github.com/DiligentGraphics/DiligentSamples/tree/master/Samples/AntTweakBar) | ![](https://github.com/DiligentGraphics/DiligentSamples/blob/master/Samples/AntTweakBar/Animation_Small.gif) | This sample demonstrates how to use [AntTweakBar library](http://anttweakbar.sourceforge.net/doc) to create simple user interface. |
 | [Atmosphere Sample](https://github.com/DiligentGraphics/DiligentSamples/tree/master/Samples/Atmosphere) | ![](https://github.com/DiligentGraphics/DiligentSamples/blob/master/Samples/Atmosphere/Animation_Small.gif) | This sample demonstrates how to integrate [Epipolar Light Scattering](https://github.com/DiligentGraphics/DiligentFX/tree/master/Postprocess/EpipolarLightScattering) post-processing effect into an application to render physically-based atmosphere. |
 | [GLTF Viewer](https://github.com/DiligentGraphics/DiligentSamples/tree/master/Samples/GLTFViewer) | <img src="https://github.com/DiligentGraphics/DiligentFX/blob/master/GLTF_PBR_Renderer/screenshots/flight_helmet.jpg" width=240> | This sample demonstrates how to use the [Asset Loader](https://github.com/DiligentGraphics/DiligentTools/tree/master/AssetLoader) and [GLTF PBR Renderer](https://github.com/DiligentGraphics/DiligentFX/tree/master/GLTF_PBR_Renderer) to load and render GLTF models. |
+| [Shadows](https://github.com/DiligentGraphics/DiligentSamples/tree/master/Samples/Shadows) | <img src="https://github.com/DiligentGraphics/DiligentSamples/blob/master/Samples/Shadows/Screenshot.jpg" width=240> | This sample demonstrates how to use the [Shadowing component](https://github.com/DiligentGraphics/DiligentFX/tree/master/Components#shadows) to render high-quality shadows. |
+| [Dear ImGui Demo](https://github.com/DiligentGraphics/DiligentSamples/tree/master/Samples/ImguiDemo) | <img src="https://github.com/DiligentGraphics/DiligentSamples/blob/master/Samples/ImguiDemo/Screenshot.png" width=240> | This sample demonstrates the integration of the engine with [dear imgui](https://github.com/ocornut/imgui) UI library. |
 
 <a name="demos"></a>
 # Demos
@@ -621,6 +619,41 @@ The following components are now available:
 |-----------------|-----------------|
 | ![](https://github.com/DiligentGraphics/DiligentFX/blob/master/GLTF_PBR_Renderer/screenshots/damaged_helmet.jpg) | ![](https://github.com/DiligentGraphics/DiligentFX/blob/master/GLTF_PBR_Renderer/screenshots/flight_helmet.jpg) |
 | ![](https://github.com/DiligentGraphics/DiligentFX/blob/master/GLTF_PBR_Renderer/screenshots/mr_spheres.jpg)     | ![](https://github.com/DiligentGraphics/DiligentSamples/blob/master/Samples/GLTFViewer/screenshots/cesium_man_large.gif)  |
+
+
+* [Shadows](https://github.com/DiligentGraphics/DiligentFX/tree/master/Components#shadows)
+<img src="https://github.com/DiligentGraphics/DiligentFX/blob/master/Components/media/Powerplant-Shadows.jpg" width=240>
+
+
+<a name="products"></a>
+# Products using Diligent Engine
+
+We would appreciate it if you could send us a link in case your product uses Diligent Engine.
+
+* Your product here (please submit a [PR](https://github.com/DiligentGraphics/DiligentEngine/pulls))!
+
+
+<a name="license"></a>
+# License
+
+See [Apache 2.0 license](License.txt).
+
+This project has some third-party dependencies, each of which may have independent licensing:
+
+* Core module:
+  * [SPIRV-Cross](https://github.com/KhronosGroup/SPIRV-Cross): SPIRV parsing and cross-compilation tools.
+  * [SPIRV-Headers](https://github.com/KhronosGroup/SPIRV-Headers): SPIRV header files.
+  * [SPIRV-Tools](https://github.com/KhronosGroup/SPIRV-Tools): SPIRV optimization and validation tools.
+  * [glslang](https://github.com/KhronosGroup/glslang): Khronos reference compiler and validator for GLSL, ESSL, and HLSL.
+  * [glew](http://glew.sourceforge.net/): OpenGL Extension Wrangler Library.
+* Tools module:
+  * [libjpeg](http://libjpeg.sourceforge.net/): C library for reading and writing JPEG image files.
+  * [libtiff](http://www.libtiff.org/): TIFF Library and Utilities.
+  * [libpng](http://www.libpng.org/pub/png/libpng.html): Official PNG reference library.
+  * [zlib](https://zlib.net/): A compression library.
+  * [lua](https://www.lua.org/): Lua programming language run time.
+  * [tinygltf](https://github.com/syoyo/tinygltf): A header only C++11 glTF 2.0 library.
+  * [dear imgui](https://github.com/ocornut/imgui): A bloat-free immediate mode graphical user interface library.
 
 
 <a name="contributing"></a>

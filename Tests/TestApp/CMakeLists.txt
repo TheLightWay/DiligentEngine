@@ -108,7 +108,7 @@ endif()
 set_common_target_properties(TestApp)
 target_include_directories(TestApp
 PRIVATE
-    ../../DiligentCore/External/vulkan
+    ../../DiligentCore/ThirdParty/vulkan
 PUBLIC
     include
 )
@@ -129,19 +129,19 @@ get_supported_backends(ENGINE_LIBRARIES)
 
 target_link_libraries(TestApp 
 PRIVATE 
-    BuildSettings
+    Diligent-BuildSettings
 PUBLIC
     NativeAppBase
-    Common 
-    GraphicsTools
-    TargetPlatform
-    RenderScript
-    GraphicsAccessories
+    Diligent-Common 
+    Diligent-GraphicsTools
+    Diligent-TargetPlatform
+    Diligent-RenderScript
+    Diligent-GraphicsAccessories
     ${ENGINE_LIBRARIES}
 )
 
 if(GL_SUPPORTED OR GLES_SUPPORTED)
-    target_link_libraries(TestApp PRIVATE HLSL2GLSLConverterLib)
+    target_link_libraries(TestApp PRIVATE Diligent-HLSL2GLSLConverterLib)
 endif()
 
 if(GL_SUPPORTED)
