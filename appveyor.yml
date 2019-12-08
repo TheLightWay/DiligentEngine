@@ -7,7 +7,6 @@ branches:
     - master
 
 image:
-#- Visual Studio 2015
 - Visual Studio 2017
 
 environment: 
@@ -53,25 +52,23 @@ clone_folder: c:\projects\diligentengine
 install:
   # clone submodules
   - git submodule update --init --recursive
-
-  # Install a recent CMake
-  - set CMAKE_URL="https://github.com/Kitware/CMake/releases/download/v3.13.2/cmake-3.13.2-win64-x64.zip"
-  - appveyor DownloadFile %CMAKE_URL% -FileName cmake.zip
-  - 7z x cmake.zip -oC:\projects\deps > nul
-  - move C:\projects\deps\cmake-* C:\projects\deps\cmake # Move to a version-agnostic directory
-  - set PATH=C:\projects\deps\cmake\bin;C:\Python37;%PATH%
-  - cmake --version
-  - python --version
-  - echo %PLATFORM%
-  - if "%PLATFORM%"=="x64" ( set generator="Visual Studio 15 2017 Win64" ) else ( set generator="Visual Studio 15 2017" )
-  
+  - DiligentCore\BuildTools\Scripts\appveyor\install.bat
+ 
 before_build:
+  - cd c:\projects\diligentengine\DiligentCore\BuildTools\FormatValidation
+  - validate_format_win.bat
+  - cd c:\projects\diligentengine\DiligentTools\BuildTools\FormatValidation
+  - validate_format_win.bat
+  - cd c:\projects\diligentengine\DiligentFX\BuildTools\FormatValidation
+  - validate_format_win.bat
+  - cd c:\projects\diligentengine\DiligentSamples\BuildTools\FormatValidation
+  - validate_format_win.bat
   - cd c:\projects\diligentengine
-  - echo %generator%
-  - echo %cmake_args%
-  - cmake -D DILIGENT_ENABLE_TESTS=TRUE %cmake_args% -S . -B ./cmk_build -G %generator%
+  - echo %PLATFORM%
+  - echo.%cmake_args%
+  - cmake -D DILIGENT_ENABLE_TESTS=TRUE %cmake_args% -S . -B ./build -G "Visual Studio 15 2017" -A %PLATFORM%
 
 build:
-  project: c:\projects\diligentengine\cmk_build\DiligentEngine.sln
+  project: c:\projects\diligentengine\build\DiligentEngine.sln
   verbosity: minimal
   parallel: true
