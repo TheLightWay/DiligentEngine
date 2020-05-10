@@ -15,8 +15,8 @@ addons:
     sources:
       - ubuntu-toolchain-r-test
     packages:
-      - gcc-7
-      - g++-7
+      - gcc-9
+      - g++-9
       - cmake
 
 matrix:
@@ -26,11 +26,13 @@ matrix:
     env:
       - CONFIG=Debug
   - os: osx
+    osx_image: xcode11.1
     compiler: clang
     env: 
       - CONFIG=Debug
       - IOS=false
   - os: osx
+    osx_image: xcode11.1
     compiler: clang
     env: 
       - CONFIG=Debug
@@ -40,11 +42,13 @@ matrix:
     env:
       - CONFIG=Release
   - os: osx
+    osx_image: xcode11.1
     compiler: clang
     env: 
       - CONFIG=Release
       - IOS=false
   - os: osx
+    osx_image: xcode11.1
     compiler: clang
     env: 
       - CONFIG=Release
@@ -61,4 +65,8 @@ script:
   - cd ../../../DiligentSamples/BuildTools/FormatValidation
   - . ../../../DiligentCore/BuildTools/Scripts/travis/validate_format.sh
   - cd ../../../
-  - . ./DiligentCore/BuildTools/Scripts/travis/build.sh "-DDILIGENT_ENABLE_TESTS=TRUE"
+  - . ./DiligentCore/BuildTools/Scripts/travis/build.sh "-DDILIGENT_BUILD_TESTS=TRUE"
+  - cd ../DiligentCore/Tests/DiligentCoreAPITest/assets
+  - . ../../../BuildTools/Scripts/travis/run_tests.sh ../../../../build/DiligentCore
+  - cd ../../../../DiligentTools/Tests/DiligentToolsTest/assets
+  - . ../../../BuildTools/Scripts/travis/run_tests.sh ../../../../build/DiligentTools

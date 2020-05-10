@@ -13,6 +13,7 @@ It is distributed under [Apache 2.0 license](License.txt) and is free to use.
 [![Chat on gitter](https://badges.gitter.im/gitterHQ/gitter.png)](https://gitter.im/diligent-engine)
 [![Build Status](https://ci.appveyor.com/api/projects/status/github/DiligentGraphics/DiligentEngine?svg=true)](https://ci.appveyor.com/project/DiligentGraphics/diligentengine)
 [![Build Status](https://travis-ci.org/DiligentGraphics/DiligentEngine.svg?branch=master)](https://travis-ci.org/DiligentGraphics/DiligentEngine)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/978eebabb2fc438f9d736443b71127aa)](https://www.codacy.com/manual/DiligentGraphics/DiligentEngine?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=DiligentGraphics/DiligentEngine&amp;utm_campaign=Badge_Grade)
 
 ## Features
 
@@ -25,8 +26,10 @@ It is distributed under [Apache 2.0 license](License.txt) and is free to use.
 * Modular design
   * Components are clearly separated logically and physically and can be used as needed
   * Only take what you need for your project
-* Clear object-based interface
-  * No hidden global states
+* Clear and concise API
+  * C/C++
+  * Object-based
+  * Stateless
 * Key graphics features:
   * [Automatic shader resource binding](http://diligentgraphics.com/2016/03/23/resource-binding-model-in-diligent-engine-2-0/) designed to leverage next-generation graphics APIs
   * Multithreaded command buffer generation
@@ -36,7 +39,11 @@ It is distributed under [Apache 2.0 license](License.txt) and is free to use.
   * Descriptor and memory management
   * Shader resource reflection
 * Extensive validation and error reporting
-* Modern c++ features to make code fast and reliable
+* Modern c++ features to make the code fast and reliable
+* Consistent high quality is ensured by continuous integration
+  * Automated builds and unit testing
+  * Source code formatting validation
+  * Static analysis
 
 ## High-level Rendering components
 
@@ -54,7 +61,7 @@ It is distributed under [Apache 2.0 license](License.txt) and is free to use.
 | <img src="https://github.com/DiligentGraphics/DiligentCore/blob/master/media/windows-logo.png" width=24 valign="middle"> Win32 (Windows desktop)| Direct3D11, Direct3D12, OpenGL4.2+, Vulkan     | [![Build Status](https://ci.appveyor.com/api/projects/status/github/DiligentGraphics/DiligentEngine?svg=true)](https://ci.appveyor.com/project/DiligentGraphics/diligentengine) |
 | <img src="https://github.com/DiligentGraphics/DiligentCore/blob/master/media/uwindows-logo.png" width=24 valign="middle"> Universal Windows     | Direct3D11, Direct3D12                         | [![Build Status](https://ci.appveyor.com/api/projects/status/github/DiligentGraphics/DiligentEngine?svg=true)](https://ci.appveyor.com/project/DiligentGraphics/diligentengine) |
 | <img src="https://github.com/DiligentGraphics/DiligentCore/blob/master/media/linux-logo.png" width=24 valign="middle"> Linux                    | OpenGL4.2+, Vulkan                             | [![Build Status](https://travis-ci.org/DiligentGraphics/DiligentEngine.svg?branch=master)](https://travis-ci.org/DiligentGraphics/DiligentEngine)      |
-| <img src="https://github.com/DiligentGraphics/DiligentCore/blob/master/media/android-logo.png" width=24 valign="middle"> Android                | OpenGLES3.0+                                   |																																					    |
+| <img src="https://github.com/DiligentGraphics/DiligentCore/blob/master/media/android-logo.png" width=24 valign="middle"> Android                | OpenGLES3.0+, Vulkan                           |																																					    |
 | <img src="https://github.com/DiligentGraphics/DiligentCore/blob/master/media/macos-logo.png" width=24 valign="middle"> MacOS                    | OpenGL4.1, Vulkan (via [MoltenVK](https://github.com/KhronosGroup/MoltenVK)) | [![Build Status](https://travis-ci.org/DiligentGraphics/DiligentEngine.svg?branch=master)](https://travis-ci.org/DiligentGraphics/DiligentEngine) |
 | <img src="https://github.com/DiligentGraphics/DiligentCore/blob/master/media/apple-logo.png" width=24 valign="middle"> iOS                      | OpenGLES3.0, Vulkan (via [MoltenVK](https://github.com/KhronosGroup/MoltenVK)) | [![Build Status](https://travis-ci.org/DiligentGraphics/DiligentEngine.svg?branch=master)](https://travis-ci.org/DiligentGraphics/DiligentEngine)      |
 
@@ -114,10 +121,8 @@ Master repository includes the following submodules:
 * [Tools](https://github.com/DiligentGraphics/DiligentTools) submodule contains 
   [texture loading library](https://github.com/DiligentGraphics/DiligentTools/tree/master/TextureLoader),
   [asset loading library](https://github.com/DiligentGraphics/DiligentTools/blob/master/AssetLoader),
-  [dear imgui implementation](https://github.com/DiligentGraphics/DiligentTools/blob/master/Imgui),
-  [native application implementation](https://github.com/DiligentGraphics/DiligentTools/blob/master/NativeApp), and 
-  [Render Script](https://github.com/DiligentGraphics/DiligentTools/tree/master/RenderScript), a Lua-based run-time 
-  graphics resource managing system. Tools module depends on Core module.
+  [dear imgui implementation](https://github.com/DiligentGraphics/DiligentTools/blob/master/Imgui), and
+  [native application implementation](https://github.com/DiligentGraphics/DiligentTools/blob/master/NativeApp).
 * [DiligentFX](https://github.com/DiligentGraphics/DiligentFX) is a high-level rendering framework that implements
   various rendering components. The module depends on Core and Tools modules.
 * [Samples](https://github.com/DiligentGraphics/DiligentSamples) submodule contains tutorials and sample applications 
@@ -148,10 +153,10 @@ You can generate Win32 solution that targets Win8.1 SDK using the following comm
 cmake -D CMAKE_SYSTEM_VERSION=8.1 -S . -B ./build/Win64_8.1 -G "Visual Studio 15 2017" -A x64
 ```
 
-If you use MinGW, you can generate the make files using the command below (please be aware of some [known build issues](https://github.com/DiligentGraphics/DiligentEngine/issues/31)):
+If you use MinGW, you can generate the make files using the command below (please be aware of some [known build issues](https://github.com/ocornut/imgui/issues/3183)):
 
 ```
-cmake -S . -B ./build/MinGW -G "MinGW Makefiles"
+cmake -S . -B ./build/MinGW -D CMAKE_BUILD_TYPE=Release -G "MinGW Makefiles"
 ```
 
 **WARNING!** In current implementation, full path to cmake build folder **must not contain white spaces**.
@@ -227,6 +232,7 @@ sudo apt-get install libx11-dev
 sudo apt-get install mesa-common-dev
 sudo apt-get install mesa-utils
 sudo apt-get install libgl-dev
+sudo apt-get install python3-distutils
 ```
 
 To configure Vulkan you will also need to:
@@ -261,11 +267,20 @@ Please make sure that your machine is set up for Android development. Download
 and other required tools. If you are not using CMake version bundled with Android Studio, make sure
 your build files are [properly configured](https://developer.android.com/studio/projects/add-native-code.html#use_a_custom_cmake_version).
 To verify that your environment is properly set up, try building the
-[teapots sample](https://github.com/googlesamples/android-ndk/tree/master/teapots).
+[teapots sample](https://github.com/googlesamples/android-ndk/tree/master/teapots) as well as
+[Vulkan Android tutorials](https://github.com/googlesamples/android-vulkan-tutorials).
 
-Open *DiligentSamples/Android* or *UnityPlugin/Android* folders with Android Studio to build and run
-the engine samples and Unity emulator on Android.
+Known issues:
 
+* If native build does not find python executable, add `PYTHON_EXECUTABLE` variable to [CMake arguments in NativeApp's
+  build.gradle file](https://github.com/DiligentGraphics/DiligentTools/blob/master/NativeApp/Android/build.gradle#L12):
+  `-DPYTHON_EXECUTABLE=/Path/To/Your/Python36/python.exe`
+* If native build messes up shader_list.h file, go to git and undo the changes.
+
+Open *DiligentSamples/Android* folder with Android Studio to build and run tutorials and samples on Android.
+
+By default, appplications will run in OpenGLES mode. To run them in Vulkan mode, add the following launch flags:
+`--es mode vk` (in Android Studio, go to Run->Edit Configurations menu)
 
 <a name="build_and_run_macos"></a>
 ## MacOS
@@ -293,8 +308,8 @@ In particular, you may need to define the following environment variables (assum
 export VULKAN_SDK=~/LunarG/vulkansdk-macos/macOS
 export PATH=$VULKAN_SDK/bin:$PATH
 export DYLD_LIBRARY_PATH=$VULKAN_SDK/lib:$DYLD_LIBRARY_PATH
-export VK_ICD_FILENAMES=$VULKAN_SDK/etc/vulkan/icd.d/MoltenVK_icd.json
-export VK_LAYER_PATH=$VULKAN_SDK/etc/vulkan/explicit_layer.d
+export VK_ICD_FILENAMES=$VULKAN_SDK/share/vulkan/icd.d/MoltenVK_icd.json
+export VK_LAYER_PATH=$VULKAN_SDK/share/vulkan/explicit_layer.d
 ```
 
 Note that environment variables set in the shell are not seen by the applications launched from Launchpad
@@ -309,6 +324,7 @@ defaults write com.apple.dt.Xcode UseSanitizedBuildSystemEnvironment -bool NO
 
 Please refer to [this page](https://vulkan.lunarg.com/doc/sdk/latest/mac/getting_started.html) for more details.
 
+Last tested LunarG SDK version: 1.2.135.0.
 
 <a name="build_and_run_ios"></a>
 ## iOS
@@ -326,8 +342,9 @@ you will need to set appropriate development team in the project settings.
 ### Configuring Vulkan Build Environment
 
 To enable Vulkan on iOS, download and install [VulkanSDK](https://vulkan.lunarg.com/sdk/home#mac). There is no Vulkan loader
-on iOS, and Diligent Engine links directly with MoltenVK dynamic library that implements Vulkan on Metal.
-Note that iOS simulator does not currently support Metal, and MoltenVK libraries are only available for arm64 architecture.
+on iOS, and Diligent Engine links directly with MoltenVK static library (as recommended by 
+[MoltenVk install guide](https://github.com/KhronosGroup/MoltenVK/blob/master/Docs/MoltenVK_Runtime_UserGuide.md#install-as-static-framework-static-library-or-dynamic-library))
+that implements Vulkan on Metal. Note that MoltenVK libraries are only provided for arm64 architecture.
 To enable Vulkan in Diligent Engine on iOS, specify the path to Vulkan SDK when running CMake, for example (assuming
 that Vulkan SDK is installed at `/LunarG/vulkansdk-macos`):
 
@@ -335,16 +352,14 @@ that Vulkan SDK is installed at `/LunarG/vulkansdk-macos`):
 cmake -DCMAKE_TOOLCHAIN_FILE=DiligentCore/ios.toolchain.cmake -DIOS_PLATFORM=OS64 -DIOS_ARCH=arm64 -DVULKAN_SDK=/LunarG/vulkansdk-macos -H. -Bbuild/IOS -GXcode
 ```
 
-Xcode project [cannot be completely configured by CMake](https://github.com/DiligentGraphics/DiligentSamples/issues/9).
-For every executable target, the following manual steps have to be performed:
+By default, the engine will link with static version of MoltenVK library located in LunarG SDK. If this is not desired or an application wants
+to use a library from a specific location, it can provide the full path to the library via `MoltenVK_LIBRARY` CMake variable. When
+`MoltenVK_LIBRARY` is defined, `VULKAN_SDK` is ignored.
 
-* Open *Build Phases* tab and add a new *Copy Files* phase.
-* Select  `Executables` in the `Destination` list.
-* Drag `MoltenVK/iOS/dynamic/libMoltenVK.dylib` dynamic library from Vulkan SDK into the copy files list.
-* Make sure that *Code Sign On Copy* checkbox is marked.
+Refer to [MoltenVK user guide](https://github.com/KhronosGroup/MoltenVK/blob/master/Docs/MoltenVK_Runtime_UserGuide.md#install)
+for more information about MoltenVK installation and usage.
 
-Please refer to [MoltenVK user guide](https://github.com/KhronosGroup/MoltenVK/blob/master/Docs/MoltenVK_Runtime_UserGuide.md#install)
-for more details. 
+Last tested LunarG SDK version: 1.2.135.0.
 
 <a name="build_and_run_integration"></a>
 ## Integrating Diligent Engine with Existing Build System
@@ -435,7 +450,7 @@ cmake --build . --target install
 
 DiligentCore installation directory will contain everything required to integrate the engine:
 
-* *headers* subdirectory will contain all required header files. Add this directory to your include search directories.
+* *include* subdirectory will contain all required header files. Add this directory to your include search directories.
 * *lib* subdirectory will contain static libraries.
 * *bin* subdirectory will contain dynamic libraries.
 
@@ -473,7 +488,7 @@ cmake -D DILIGENT_NO_DIRECT3D11=TRUE -S . -B ./build/Win64 -G "Visual Studio 15 
 
 Additionally, individual engine components can be enabled or disabled using the following options:
 `DILIGENT_BUILD_TOOLS`, `DILIGENT_BUILD_FX`, `DILIGENT_BUILD_SAMPLES`, `DILIGENT_BUILD_DEMOS`,
-`DILIGENT_BUILD_UNITY_PLUGIN`, `DILIGENT_BUILD_RENDER_SCRIPT`. If you only want to build `SampleBase` project,
+`DILIGENT_BUILD_UNITY_PLUGIN`. If you only want to build `SampleBase` project,
  you can use `DILIGENT_BUILD_SAMPLE_BASE_ONLY` option.
 
 By default Vulkan back-end is linked with glslang that enables compiling HLSL and GLSL shaders to SPIRV at run time.
@@ -596,6 +611,7 @@ Please refer to [this page](https://github.com/DiligentGraphics/DiligentCore#api
 | [01 - Hello Triangle](https://github.com/DiligentGraphics/DiligentSamples/blob/master/Tutorials/Tutorial01_HelloTriangle) | ![](https://github.com/DiligentGraphics/DiligentSamples/blob/master/Tutorials/Tutorial01_HelloTriangle/Screenshot.png) | This tutorial shows how to render simple triangle using Diligent Engine API. |
 | [02 - Cube](https://github.com/DiligentGraphics/DiligentSamples/blob/master/Tutorials/Tutorial02_Cube) | ![](https://github.com/DiligentGraphics/DiligentSamples/blob/master/Tutorials/Tutorial02_Cube/Animation_Small.gif) | This tutorial demonstrates how to render an actual 3D object, a cube. It shows how to load shaders from files, create and use vertex, index and uniform buffers. |
 | [03 - Texturing](https://github.com/DiligentGraphics/DiligentSamples/blob/master/Tutorials/Tutorial03_Texturing) | ![](https://github.com/DiligentGraphics/DiligentSamples/blob/master/Tutorials/Tutorial03_Texturing/Animation_Small.gif) | This tutorial demonstrates how to apply a texture to a 3D object. It shows how to load a texture from file, create shader resource binding object and how to sample a texture in the shader. |
+| [03 - Texturing-C](https://github.com/DiligentGraphics/DiligentSamples/tree/master/Tutorials/Tutorial03_Texturing-C) | ![](https://github.com/DiligentGraphics/DiligentSamples/blob/master/Tutorials/Tutorial03_Texturing/Animation_Small.gif) | This tutorial is identical to Tutorial03, but is implemented using C API. |
 | [04 - Instancing](https://github.com/DiligentGraphics/DiligentSamples/blob/master/Tutorials/Tutorial04_Instancing) | ![](https://github.com/DiligentGraphics/DiligentSamples/blob/master/Tutorials/Tutorial04_Instancing/Animation_Small.gif) | This tutorial demonstrates how to use instancing to render multiple copies of one object using unique transformation matrix for every copy. |
 | [05 - Texture Array](https://github.com/DiligentGraphics/DiligentSamples/blob/master/Tutorials/Tutorial05_TextureArray) | ![](https://github.com/DiligentGraphics/DiligentSamples/blob/master/Tutorials/Tutorial05_TextureArray/Animation_Small.gif) | This tutorial demonstrates how to combine instancing with texture arrays to use unique texture for every instance. |
 | [06 - Multithreading](https://github.com/DiligentGraphics/DiligentSamples/blob/master/Tutorials/Tutorial06_Multithreading) | ![](https://github.com/DiligentGraphics/DiligentSamples/blob/master/Tutorials/Tutorial06_Multithreading/Animation_Small.gif) | This tutorial shows how to generate command lists in parallel from multiple threads. |
@@ -610,6 +626,7 @@ Please refer to [this page](https://github.com/DiligentGraphics/DiligentCore#api
 | [15 - Multiple Windows](https://github.com/DiligentGraphics/DiligentSamples/tree/master/Tutorials/Tutorial15_MultipleWindows) | ![](https://github.com/DiligentGraphics/DiligentSamples/blob/master/Tutorials/Tutorial15_MultipleWindows/Screenshot.png) | This tutorial demonstrates how to use Diligent Engine to render to multiple windows. |
 | [16 - Bindless Resources](https://github.com/DiligentGraphics/DiligentSamples/tree/master/Tutorials/Tutorial16_BindlessResources) | ![](https://github.com/DiligentGraphics/DiligentSamples/blob/master/Tutorials/Tutorial16_BindlessResources/Animation_Small.gif) | This tutorial shows how to implement bindless resources, a technique that leverages dynamic shader resource indexing feature enabled by the next-gen APIs to significantly improve rendering performance. |
 | [17 - MSAA](https://github.com/DiligentGraphics/DiligentSamples/tree/master/Tutorials/Tutorial17_MSAA) | ![](https://github.com/DiligentGraphics/DiligentSamples/blob/master/Tutorials/Tutorial17_MSAA/Animation_Small.gif) | This tutorial demonstrates how to use multisample anti-aliasing (MSAA) to make geometrical edges look smoother and more temporarily stable. |
+| [18 - Queries](https://github.com/DiligentGraphics/DiligentSamples/tree/master/Tutorials/Tutorial18_Queries) | ![](https://github.com/DiligentGraphics/DiligentSamples/blob/master/Tutorials/Tutorial18_Queries/Animation_Small.gif) | This tutorial demonstrates how to use queries to retrieve various information about the GPU operation, such as the number of primitives rendered, command processing duration, etc. |
 
 <a name="samples"></a>
 # [Samples](https://github.com/DiligentGraphics/DiligentSamples)
@@ -681,7 +698,6 @@ This project has some third-party dependencies, each of which may have independe
   * [libtiff](http://www.libtiff.org/): TIFF Library and Utilities.
   * [libpng](http://www.libpng.org/pub/png/libpng.html): Official PNG reference library.
   * [zlib](https://zlib.net/): A compression library.
-  * [lua](https://www.lua.org/): Lua programming language run time.
   * [tinygltf](https://github.com/syoyo/tinygltf): A header only C++11 glTF 2.0 library.
   * [dear imgui](https://github.com/ocornut/imgui): A bloat-free immediate mode graphical user interface library.
 
