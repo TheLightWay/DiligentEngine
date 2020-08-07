@@ -11,6 +11,7 @@ It is distributed under [Apache 2.0 license](License.txt) and is free to use.
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](License.txt)
 [![Chat on gitter](https://badges.gitter.im/gitterHQ/gitter.png)](https://gitter.im/diligent-engine)
+[![Chat on Discord](https://img.shields.io/discord/730091778081947680?logo=discord)](https://discord.gg/t7HGBK7)
 [![Build Status](https://ci.appveyor.com/api/projects/status/github/DiligentGraphics/DiligentEngine?svg=true)](https://ci.appveyor.com/project/DiligentGraphics/diligentengine)
 [![Build Status](https://travis-ci.org/DiligentGraphics/DiligentEngine.svg?branch=master)](https://travis-ci.org/DiligentGraphics/DiligentEngine)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/978eebabb2fc438f9d736443b71127aa)](https://www.codacy.com/manual/DiligentGraphics/DiligentEngine?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=DiligentGraphics/DiligentEngine&amp;utm_campaign=Badge_Grade)
@@ -492,18 +493,23 @@ Additionally, individual engine components can be enabled or disabled using the 
  you can use `DILIGENT_BUILD_SAMPLE_BASE_ONLY` option.
 
 By default Vulkan back-end is linked with glslang that enables compiling HLSL and GLSL shaders to SPIRV at run time.
-If run-time compilation is not required, glslang can be disabled with `DILIGENT_NO_GLSLANG` cmake option. This will significantly 
-reduce the size of the Vulkan back-end binary.
+If run-time compilation is not required, glslang can be disabled with `DILIGENT_NO_GLSLANG` cmake option. 
+Additionally, HLSL support in non-Direct3D backends can be disabled with `DILIGENT_NO_HLSL` option.
+Enabling the options significantly reduces the size of Vulkan and OpenGL back-end binaries, which may be
+especailly important for mobile applications.
 
 
 <a name="build_and_run_customizing"></a>
 ## Customizing Build
 
-Diligent Engine allows clients to customize build settings by providing configuration script file that defines two optional 
+Diligent Engine allows clients to customize build settings by providing configuration script file that defines the following optional 
 [cmake functions](https://cmake.org/cmake/help/latest/command/function.html):
 
 * `custom_configure_build()` - defines global build properties such as build configurations, c/c++ compile flags, link flags etc.
-* `custom_configure_target()` - defines custom settings for every target in the build.
+* `custom_pre_configure_target()` - defines custom settings for every target in the build and is called before the engine's
+									build system starts configuring the target.
+* `custom_post_configure_target()` - called after the engine's build system has configured the target to let the client
+									 override properties set by the engine.
 
 The path to the configuration script should be provided through `BUILD_CONFIGURATION_FILE` variable when running 
 cmake and must be relative to the cmake root folder, for example:
@@ -573,12 +579,12 @@ endfunction()
 ```
 
 
-### Customizing individual target build settings with custom_configure_target() function
+### Customizing individual target build settings with custom_pre_configure_target() and custom_post_configure_target() functions
 
-If defined, `custom_configure_target()` is called for every target created by the build system and
+If defined, `custom_pre_configure_target()` is called for every target created by the build system and
 allows configuring target-specific properties.
 
-By default, the build system sets some target properties. If `custom_configure_target()` sets all required properties,
+By default, the build system sets some target properties. If `custom_pre_configure_target()` sets all required properties,
 it can tell the build system that no further processing is required by setting `TARGET_CONFIGURATION_COMPLETE`
 [parent scope](https://cmake.org/cmake/help/latest/command/set.html#set-normal-variable) variable to `TRUE`:
 
@@ -586,16 +592,28 @@ it can tell the build system that no further processing is required by setting `
 set(TARGET_CONFIGURATION_COMPLETE TRUE PARENT_SCOPE)
 ```
 
-The following is an example of `custom_configure_target()` function:
+The following is an example of `custom_pre_configure_target()` function:
 
 ```cmake
-function(custom_configure_target TARGET)
+function(custom_pre_configure_target TARGET)
     set_target_properties(${TARGET} PROPERTIES
         STATIC_LIBRARY_FLAGS_RELEASEMT /LTCG
     )
     set(TARGET_CONFIGURATION_COMPLETE TRUE PARENT_SCOPE)   
 endfunction()
 ```
+
+If the client only needs to override some settings, it may define `custom_post_configure_target()` function that is called
+after the engine has completed configuring the target, for example:
+
+```cmake
+function(custom_post_configure_target TARGET)
+    set_target_properties(${TARGET} PROPERTIES
+        CXX_STANDARD 17
+    )
+endfunction()
+```
+
 
 <a name="getting_started"></a>
 # Getting started with the API
@@ -638,6 +656,7 @@ Please refer to [this page](https://github.com/DiligentGraphics/DiligentCore#api
 | [Shadows](https://github.com/DiligentGraphics/DiligentSamples/tree/master/Samples/Shadows) | <img src="https://github.com/DiligentGraphics/DiligentSamples/blob/master/Samples/Shadows/Screenshot.jpg" width=240> | This sample demonstrates how to use the [Shadowing component](https://github.com/DiligentGraphics/DiligentFX/tree/master/Components#shadows) to render high-quality shadows. |
 | [Dear ImGui Demo](https://github.com/DiligentGraphics/DiligentSamples/tree/master/Samples/ImguiDemo) | <img src="https://github.com/DiligentGraphics/DiligentSamples/blob/master/Samples/ImguiDemo/Screenshot.png" width=240> | This sample demonstrates the integration of the engine with [dear imgui](https://github.com/ocornut/imgui) UI library. |
 | [Nuklear Demo](https://github.com/DiligentGraphics/DiligentSamples/tree/master/Samples/NuklearDemo) | <img src="https://github.com/DiligentGraphics/DiligentSamples/blob/master/Samples/NuklearDemo/Screenshot.png" width=240> | This sample demonstrates the integration of the engine with [nuklear](https://github.com/vurtun/nuklear) UI library. |
+| [Hello AR](https://github.com/DiligentGraphics/DiligentSamples/tree/master/Android/HelloAR) | <img src="https://github.com/DiligentGraphics/DiligentSamples/blob/master/Android/HelloAR/Screenshot.png" width=240> | This sample demonstrates how to use Diligent Engine in a basic Android AR application. |
 
 <a name="demos"></a>
 # Demos
@@ -677,6 +696,8 @@ The following components are now available:
 
 We would appreciate it if you could send us a link in case your product uses Diligent Engine.
 
+* [Vrmac Graphics](https://github.com/Const-me/Vrmac): A cross-platform graphics library for .NET  
+  <img src="https://github.com/Const-me/Vrmac/blob/master/screenshots/Linux/TigerFullHD-1.png" width=480>
 * Your product here (please submit a [PR](https://github.com/DiligentGraphics/DiligentEngine/pulls))!
 
 
