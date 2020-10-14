@@ -57,14 +57,14 @@ It is distributed under [Apache 2.0 license](License.txt) and is free to use.
 
 ## Supported Plaforms and Low-Level Graphics APIs
 
-| Platform                     | APIs                                        |  Build Status    |
-| ---------------------------- | ------------------------------------------- | ---------------- | 
-| <img src="https://github.com/DiligentGraphics/DiligentCore/blob/master/media/windows-logo.png" width=24 valign="middle"> Win32 (Windows desktop)| Direct3D11, Direct3D12, OpenGL4.2+, Vulkan     | [![Build Status](https://ci.appveyor.com/api/projects/status/github/DiligentGraphics/DiligentEngine?svg=true)](https://ci.appveyor.com/project/DiligentGraphics/diligentengine) |
-| <img src="https://github.com/DiligentGraphics/DiligentCore/blob/master/media/uwindows-logo.png" width=24 valign="middle"> Universal Windows     | Direct3D11, Direct3D12                         | [![Build Status](https://ci.appveyor.com/api/projects/status/github/DiligentGraphics/DiligentEngine?svg=true)](https://ci.appveyor.com/project/DiligentGraphics/diligentengine) |
-| <img src="https://github.com/DiligentGraphics/DiligentCore/blob/master/media/linux-logo.png" width=24 valign="middle"> Linux                    | OpenGL4.2+, Vulkan                             | [![Build Status](https://travis-ci.org/DiligentGraphics/DiligentEngine.svg?branch=master)](https://travis-ci.org/DiligentGraphics/DiligentEngine)      |
-| <img src="https://github.com/DiligentGraphics/DiligentCore/blob/master/media/android-logo.png" width=24 valign="middle"> Android                | OpenGLES3.0+, Vulkan                           |																																					    |
-| <img src="https://github.com/DiligentGraphics/DiligentCore/blob/master/media/macos-logo.png" width=24 valign="middle"> MacOS                    | OpenGL4.1, Vulkan (via [MoltenVK](https://github.com/KhronosGroup/MoltenVK)) | [![Build Status](https://travis-ci.org/DiligentGraphics/DiligentEngine.svg?branch=master)](https://travis-ci.org/DiligentGraphics/DiligentEngine) |
-| <img src="https://github.com/DiligentGraphics/DiligentCore/blob/master/media/apple-logo.png" width=24 valign="middle"> iOS                      | OpenGLES3.0, Vulkan (via [MoltenVK](https://github.com/KhronosGroup/MoltenVK)) | [![Build Status](https://travis-ci.org/DiligentGraphics/DiligentEngine.svg?branch=master)](https://travis-ci.org/DiligentGraphics/DiligentEngine)      |
+| Platform                                                                                                                                        | D3D11              | D3D12              |  OpenGL            | Vulkan                                                                        | OpenGLES           |  Build Status                    |
+| ----------------------------------------------------------------------------------------------------------------------------------------------- | ------------------ |------------------- | ------------------ | ----------------------------------------------------------------------------- | ------------------ | -------------------------------- |
+| <img src="https://github.com/DiligentGraphics/DiligentCore/blob/master/media/windows-logo.png" width=24 valign="middle"> Win32 (Windows desktop)| :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark:                                                            | -                  |  [![Build Status](https://ci.appveyor.com/api/projects/status/github/DiligentGraphics/DiligentEngine?svg=true)](https://ci.appveyor.com/project/DiligentGraphics/diligentengine) |
+| <img src="https://github.com/DiligentGraphics/DiligentCore/blob/master/media/uwindows-logo.png" width=24 valign="middle"> Universal Windows     | :heavy_check_mark: | :heavy_check_mark: | -                  | -                                                                             | -                  |  [![Build Status](https://ci.appveyor.com/api/projects/status/github/DiligentGraphics/DiligentEngine?svg=true)](https://ci.appveyor.com/project/DiligentGraphics/diligentengine) |
+| <img src="https://github.com/DiligentGraphics/DiligentCore/blob/master/media/linux-logo.png" width=24 valign="middle"> Linux                    | -                  | -                  | :heavy_check_mark: | :heavy_check_mark:                                                            | -                  |  [![Build Status](https://travis-ci.org/DiligentGraphics/DiligentEngine.svg?branch=master)](https://travis-ci.org/DiligentGraphics/DiligentEngine)      |
+| <img src="https://github.com/DiligentGraphics/DiligentCore/blob/master/media/macos-logo.png" width=24 valign="middle"> MacOS                    | -                  | -                  | :heavy_check_mark: | :heavy_check_mark: (via [MoltenVK](https://github.com/KhronosGroup/MoltenVK)) | -                  |  [![Build Status](https://travis-ci.org/DiligentGraphics/DiligentEngine.svg?branch=master)](https://travis-ci.org/DiligentGraphics/DiligentEngine)      |
+| <img src="https://github.com/DiligentGraphics/DiligentCore/blob/master/media/android-logo.png" width=24 valign="middle"> Android                | -                  | -                  | -                  | :heavy_check_mark:                                                            | :heavy_check_mark: |                                                                                                                                                         |
+| <img src="https://github.com/DiligentGraphics/DiligentCore/blob/master/media/apple-logo.png" width=24 valign="middle"> iOS                      | -                  | -                  | -                  | :heavy_check_mark: (via [MoltenVK](https://github.com/KhronosGroup/MoltenVK)) | :heavy_check_mark: |  [![Build Status](https://travis-ci.org/DiligentGraphics/DiligentEngine.svg?branch=master)](https://travis-ci.org/DiligentGraphics/DiligentEngine)      |
 
 # Table of Contents
 
@@ -133,25 +133,31 @@ Master repository includes the following submodules:
 # Build and Run Instructions
 
 Diligent Engine uses [CMake](https://cmake.org/) as a cross-platform build tool. 
-To start using cmake, download the [latest release](https://cmake.org/download/) (3.15 or later is required).
+To start using cmake, download the [latest release](https://cmake.org/download/) (3.16 or later is required).
 Another build prerequisite is [Python interpreter](https://www.python.org/downloads/) (3.0 or later is required).
 If after following the instuctions below you have build/run issues, please take a look at [troubleshooting](Troubleshooting.md).
 
 <a name="build_and_run_win32"></a>
 ## Win32
 
-To generate build files for Windows desktop platform, use either CMake GUI or command line tool. For example, to generate 
-[Visual Studio 2017](https://www.visualstudio.com/vs/community) 64-bit solution and project files in *build/Win64* folder, 
+Build prerequisites:
+
+* Windows SDK 10.0.17763.0 or later (10.0.19041.0 is required for mesh shaders)
+* C++ build tools
+* Visual C++ ATL Support
+
+Use either CMake GUI or command line tool to generate build files. For example, to generate 
+[Visual Studio 2019](https://www.visualstudio.com/vs/community) 64-bit solution and project files in *build/Win64* folder, 
 navigate to the engine's root folder and run the following command:
 
 ```
-cmake -S . -B ./build/Win64 -G "Visual Studio 15 2017" -A x64
+cmake -S . -B ./build/Win64 -G "Visual Studio 16 2019" -A x64
 ```
 
 You can generate Win32 solution that targets Win8.1 SDK using the following command:
 
 ```
-cmake -D CMAKE_SYSTEM_VERSION=8.1 -S . -B ./build/Win64_8.1 -G "Visual Studio 15 2017" -A x64
+cmake -D CMAKE_SYSTEM_VERSION=8.1 -S . -B ./build/Win64_8.1 -G "Visual Studio 16 2019" -A x64
 ```
 
 If you use MinGW, you can generate the make files using the command below (please be aware of some [known build issues](https://github.com/ocornut/imgui/issues/3183)):
@@ -164,8 +170,6 @@ cmake -S . -B ./build/MinGW -D CMAKE_BUILD_TYPE=Release -G "MinGW Makefiles"
 
 To enable Vulkan validation layers, you will need to download [Vulkan SDK](https://www.lunarg.com/vulkan-sdk/) and add environemt
 variable `VK_LAYER_PATH` that contains path to the *Bin* directory in VulkanSDK installation folder.
-
-Make sure that Visual C++ ATL Support is installed via Visual Studio Installer.
 
 Open *DiligentEngine.sln* file in *build/Win64* folder, select configuration and build the engine. Set the desired project
 as startup project (by default, GLTF Viewer will be selected) and run it. 
@@ -184,17 +188,17 @@ To generate build files for Universal Windows platform, you need to define the f
 * `CMAKE_SYSTEM_NAME=WindowsStore`
 * `CMAKE_SYSTEM_VERSION=< Windows SDK Version >`
 
-For example, to generate Visual Studio 2017 64-bit solution and project files in *build/UWP64* folder, run the following command
+For example, to generate Visual Studio 2019 64-bit solution and project files in *build/UWP64* folder, run the following command
 from the engine's root folder:
 
 ```
-cmake -D CMAKE_SYSTEM_NAME=WindowsStore -D CMAKE_SYSTEM_VERSION=10.0 -S . -B ./build/UWP64 -G "Visual Studio 15 2017" -A x64
+cmake -D CMAKE_SYSTEM_NAME=WindowsStore -D CMAKE_SYSTEM_VERSION=10.0 -S . -B ./build/UWP64 -G "Visual Studio 16 2019" -A x64
 ```
 
 You can target specific SDK version by refining CMAKE_SYSTEM_VERSION, for instance:
 
 ```
-cmake -D CMAKE_SYSTEM_NAME=WindowsStore -D CMAKE_SYSTEM_VERSION=10.0.16299.0 -S . -B ./build/UWP64 -G "Visual Studio 15 2017" -A x64
+cmake -D CMAKE_SYSTEM_NAME=WindowsStore -D CMAKE_SYSTEM_VERSION=10.0.16299.0 -S . -B ./build/UWP64 -G "Visual Studio 16 2019" -A x64
 ```
 
 Set the desired project as startup project (by default, GLTF Viewer will be selected) and run it. 
@@ -440,7 +444,7 @@ Note that it defaults to `/usr/local` on UNIX and `c:/Program Files/${PROJECT_NA
 be what you want. Use `-D CMAKE_INSTALL_PREFIX=install` to use local `install` folder instead:
 
 ```
-cmake -S . -B ./build/Win64 -D CMAKE_INSTALL_PREFIX=install -G "Visual Studio 15 2017" -A x64
+cmake -S . -B ./build/Win64 -D CMAKE_INSTALL_PREFIX=install -G "Visual Studio 16 2019" -A x64
 ```
 
 To install libraries and header files, run the following CMake command from the build folder:
@@ -484,7 +488,7 @@ use the following options: `DILIGENT_NO_DIRECT3D11`, `DILIGENT_NO_DIRECT3D12`, `
 The options can be set through cmake UI or from the command line as in the example below:
 
 ```
-cmake -D DILIGENT_NO_DIRECT3D11=TRUE -S . -B ./build/Win64 -G "Visual Studio 15 2017" -A x64
+cmake -D DILIGENT_NO_DIRECT3D11=TRUE -S . -B ./build/Win64 -G "Visual Studio 16 2019" -A x64
 ```
 
 Additionally, individual engine components can be enabled or disabled using the following options:
@@ -498,6 +502,9 @@ Additionally, HLSL support in non-Direct3D backends can be disabled with `DILIGE
 Enabling the options significantly reduces the size of Vulkan and OpenGL back-end binaries, which may be
 especailly important for mobile applications.
 
+Diligent Engine uses [clang-format](https://clang.llvm.org/docs/ClangFormat.html) to ensure consistent
+formatting throught the code base. The validation can be disabled using `DILIGENT_NO_FORMAT_VALIDATION`
+CMake option. Note that any pool request will fail if formatting issues are found.
 
 <a name="build_and_run_customizing"></a>
 ## Customizing Build
@@ -515,7 +522,7 @@ The path to the configuration script should be provided through `BUILD_CONFIGURA
 cmake and must be relative to the cmake root folder, for example:
 
 ```
-cmake -D BUILD_CONFIGURATION_FILE=BuildConfig.cmake -S . -B ./build/Win64 -G "Visual Studio 15 2017" -A x64
+cmake -D BUILD_CONFIGURATION_FILE=BuildConfig.cmake -S . -B ./build/Win64 -G "Visual Studio 16 2019" -A x64
 ```
 
 ### Customizing global build settings with custom_configure_build() function
@@ -645,6 +652,8 @@ Please refer to [this page](https://github.com/DiligentGraphics/DiligentCore#api
 | [16 - Bindless Resources](https://github.com/DiligentGraphics/DiligentSamples/tree/master/Tutorials/Tutorial16_BindlessResources) | ![](https://github.com/DiligentGraphics/DiligentSamples/blob/master/Tutorials/Tutorial16_BindlessResources/Animation_Small.gif) | This tutorial shows how to implement bindless resources, a technique that leverages dynamic shader resource indexing feature enabled by the next-gen APIs to significantly improve rendering performance. |
 | [17 - MSAA](https://github.com/DiligentGraphics/DiligentSamples/tree/master/Tutorials/Tutorial17_MSAA) | ![](https://github.com/DiligentGraphics/DiligentSamples/blob/master/Tutorials/Tutorial17_MSAA/Animation_Small.gif) | This tutorial demonstrates how to use multisample anti-aliasing (MSAA) to make geometrical edges look smoother and more temporarily stable. |
 | [18 - Queries](https://github.com/DiligentGraphics/DiligentSamples/tree/master/Tutorials/Tutorial18_Queries) | ![](https://github.com/DiligentGraphics/DiligentSamples/blob/master/Tutorials/Tutorial18_Queries/Animation_Small.gif) | This tutorial demonstrates how to use queries to retrieve various information about the GPU operation, such as the number of primitives rendered, command processing duration, etc. |
+| [19 - Render Passes](https://github.com/DiligentGraphics/DiligentSamples/tree/master/Tutorials/Tutorial19_RenderPasses) | ![](https://github.com/DiligentGraphics/DiligentSamples/blob/master/Tutorials/Tutorial19_RenderPasses/Animation_Small.gif) | This tutorial demonstrates how to use the render passes API to implement simple deferred shading. |
+| [20 - Mesh Shader](https://github.com/DiligentGraphics/DiligentSamples/tree/master/Tutorials/Tutorial20_MeshShader) | ![](https://github.com/DiligentGraphics/DiligentSamples/blob/master/Tutorials/Tutorial20_MeshShader/Animation_Small.gif) | This tutorial demonstrates how to use amplification and mesh shaders, the new programmable stages, to implement view frustum culling and object LOD calculation on the GPU. |
 
 <a name="samples"></a>
 # [Samples](https://github.com/DiligentGraphics/DiligentSamples)
