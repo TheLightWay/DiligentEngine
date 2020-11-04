@@ -266,7 +266,7 @@ Asteroids::Asteroids(const Settings& settings, AsteroidsSimulation* asteroids, G
             // (0, 1, 2, ...) and we will acess it with FirstInstanceLocation.
             BufferDesc desc;
             desc.Name          = "Instance ID buffer";
-            desc.Usage         = USAGE_STATIC;
+            desc.Usage         = USAGE_IMMUTABLE;
             desc.BindFlags     = BIND_VERTEX_BUFFER;
             desc.uiSizeInBytes = static_cast<Uint32>(sizeof(Uint32)) * MaxAsteroidsInSubset;
             std::vector<Uint32> Ids(MaxAsteroidsInSubset);
@@ -298,8 +298,9 @@ Asteroids::Asteroids(const Settings& settings, AsteroidsSimulation* asteroids, G
 
     // create pipeline state
     {
-        PipelineStateCreateInfo PSOCreateInfo;
-        PipelineStateDesc&      PSODesc = PSOCreateInfo.PSODesc;
+        GraphicsPipelineStateCreateInfo PSOCreateInfo;
+        PipelineStateDesc&              PSODesc          = PSOCreateInfo.PSODesc;
+        GraphicsPipelineDesc&           GraphicsPipeline = PSOCreateInfo.GraphicsPipeline;
 
         // clang-format off
         LayoutElement inputDesc[] =
@@ -310,11 +311,11 @@ Asteroids::Asteroids(const Settings& settings, AsteroidsSimulation* asteroids, G
         };
         // clang-format on
 
-        PSODesc.GraphicsPipeline.InputLayout.LayoutElements = inputDesc;
+        GraphicsPipeline.InputLayout.LayoutElements = inputDesc;
         // In bindless mode we will use instance ID buffer as the third input
-        PSODesc.GraphicsPipeline.InputLayout.NumElements = (m_BindingMode == BindingMode::Bindless) ? 3 : 2;
+        GraphicsPipeline.InputLayout.NumElements = (m_BindingMode == BindingMode::Bindless) ? 3 : 2;
 
-        PSODesc.GraphicsPipeline.DepthStencilDesc.DepthFunc = COMPARISON_FUNC_GREATER_EQUAL;
+        GraphicsPipeline.DepthStencilDesc.DepthFunc = COMPARISON_FUNC_GREATER_EQUAL;
 
         RefCntAutoPtr<IShader> vs, ps;
         {
@@ -351,7 +352,7 @@ Asteroids::Asteroids(const Settings& settings, AsteroidsSimulation* asteroids, G
             mDevice->CreateShader(attribs, &ps);
         }
 
-        StaticSamplerDesc samDesc;
+        ImmutableSamplerDesc samDesc;
         samDesc.ShaderStages         = SHADER_TYPE_PIXEL;
         samDesc.Desc.MagFilter       = FILTER_TYPE_ANISOTROPIC;
         samDesc.Desc.MinFilter       = FILTER_TYPE_ANISOTROPIC;
@@ -366,8 +367,8 @@ Asteroids::Asteroids(const Settings& settings, AsteroidsSimulation* asteroids, G
         samDesc.Desc.ComparisonFunc  = COMPARISON_FUNC_NEVER;
         samDesc.SamplerOrTextureName = "Tex";
 
-        PSODesc.ResourceLayout.StaticSamplers    = &samDesc;
-        PSODesc.ResourceLayout.NumStaticSamplers = 1;
+        PSODesc.ResourceLayout.ImmutableSamplers    = &samDesc;
+        PSODesc.ResourceLayout.NumImmutableSamplers = 1;
 
         std::vector<ShaderResourceVariableDesc> Variables =
             {
@@ -379,15 +380,16 @@ Asteroids::Asteroids(const Settings& settings, AsteroidsSimulation* asteroids, G
         PSODesc.ResourceLayout.Variables           = Variables.data();
         PSODesc.ResourceLayout.NumVariables        = static_cast<Uint32>(Variables.size());
 
-        PSODesc.GraphicsPipeline.RTVFormats[0]     = mSwapChain->GetDesc().ColorBufferFormat;
-        PSODesc.GraphicsPipeline.NumRenderTargets  = 1;
-        PSODesc.GraphicsPipeline.DSVFormat         = mSwapChain->GetDesc().DepthBufferFormat;
-        PSODesc.GraphicsPipeline.PrimitiveTopology = PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
-        PSODesc.Name                               = "Asteroids PSO";
+        GraphicsPipeline.RTVFormats[0]     = mSwapChain->GetDesc().ColorBufferFormat;
+        GraphicsPipeline.NumRenderTargets  = 1;
+        GraphicsPipeline.DSVFormat         = mSwapChain->GetDesc().DepthBufferFormat;
+        GraphicsPipeline.PrimitiveTopology = PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
 
-        PSODesc.GraphicsPipeline.pVS = vs;
-        PSODesc.GraphicsPipeline.pPS = ps;
-        mDevice->CreatePipelineState(PSOCreateInfo, &mAsteroidsPSO);
+        PSODesc.Name = "Asteroids PSO";
+
+        PSOCreateInfo.pVS = vs;
+        PSOCreateInfo.pPS = ps;
+        mDevice->CreateGraphicsPipelineState(PSOCreateInfo, &mAsteroidsPSO);
         mAsteroidsPSO->GetStaticVariableByName(SHADER_TYPE_VERTEX, "DrawConstantBuffer")->Set(mDrawConstantBuffer);
 
         Uint32 NumSRBs = 0;
@@ -466,38 +468,41 @@ Asteroids::Asteroids(const Settings& settings, AsteroidsSimulation* asteroids, G
         attribs.Desc.ShaderType = SHADER_TYPE_PIXEL;
         mDevice->CreateShader(attribs, &ps);
 
-        PipelineStateCreateInfo PSOCreateInfo;
-        PipelineStateDesc&      PSODesc = PSOCreateInfo.PSODesc;
+        GraphicsPipelineStateCreateInfo PSOCreateInfo;
+        PipelineStateDesc&              PSODesc          = PSOCreateInfo.PSODesc;
+        GraphicsPipelineDesc&           GraphicsPipeline = PSOCreateInfo.GraphicsPipeline;
 
         PSODesc.ResourceLayout.DefaultVariableType = SHADER_RESOURCE_VARIABLE_TYPE_STATIC;
 
-        StaticSamplerDesc ssdesc;
-        ssdesc.ShaderStages                      = SHADER_TYPE_PIXEL;
-        ssdesc.SamplerOrTextureName              = "Skybox";
-        ssdesc.Desc.MagFilter                    = FILTER_TYPE_ANISOTROPIC;
-        ssdesc.Desc.MinFilter                    = FILTER_TYPE_ANISOTROPIC;
-        ssdesc.Desc.MipFilter                    = FILTER_TYPE_ANISOTROPIC;
-        ssdesc.Desc.AddressU                     = TEXTURE_ADDRESS_WRAP;
-        ssdesc.Desc.AddressV                     = TEXTURE_ADDRESS_WRAP;
-        ssdesc.Desc.AddressW                     = TEXTURE_ADDRESS_WRAP;
-        ssdesc.Desc.MaxAnisotropy                = TEXTURE_ANISO;
-        PSODesc.ResourceLayout.StaticSamplers    = &ssdesc;
-        PSODesc.ResourceLayout.NumStaticSamplers = 1;
+        ImmutableSamplerDesc ImtblSamDesc;
+        ImtblSamDesc.ShaderStages                   = SHADER_TYPE_PIXEL;
+        ImtblSamDesc.SamplerOrTextureName           = "Skybox";
+        ImtblSamDesc.Desc.MagFilter                 = FILTER_TYPE_ANISOTROPIC;
+        ImtblSamDesc.Desc.MinFilter                 = FILTER_TYPE_ANISOTROPIC;
+        ImtblSamDesc.Desc.MipFilter                 = FILTER_TYPE_ANISOTROPIC;
+        ImtblSamDesc.Desc.AddressU                  = TEXTURE_ADDRESS_WRAP;
+        ImtblSamDesc.Desc.AddressV                  = TEXTURE_ADDRESS_WRAP;
+        ImtblSamDesc.Desc.AddressW                  = TEXTURE_ADDRESS_WRAP;
+        ImtblSamDesc.Desc.MaxAnisotropy             = TEXTURE_ANISO;
+        PSODesc.ResourceLayout.ImmutableSamplers    = &ImtblSamDesc;
+        PSODesc.ResourceLayout.NumImmutableSamplers = 1;
 
-        PSODesc.Name                                        = "Skybox PSO";
-        PSODesc.GraphicsPipeline.InputLayout.LayoutElements = inputDesc;
-        PSODesc.GraphicsPipeline.InputLayout.NumElements    = _countof(inputDesc);
+        PSODesc.Name = "Skybox PSO";
 
-        PSODesc.GraphicsPipeline.DepthStencilDesc.DepthFunc = COMPARISON_FUNC_GREATER_EQUAL;
-        PSODesc.GraphicsPipeline.pVS                        = vs;
-        PSODesc.GraphicsPipeline.pPS                        = ps;
+        GraphicsPipeline.InputLayout.LayoutElements = inputDesc;
+        GraphicsPipeline.InputLayout.NumElements    = _countof(inputDesc);
 
-        PSODesc.GraphicsPipeline.RTVFormats[0]     = mSwapChain->GetDesc().ColorBufferFormat;
-        PSODesc.GraphicsPipeline.NumRenderTargets  = 1;
-        PSODesc.GraphicsPipeline.DSVFormat         = mSwapChain->GetDesc().DepthBufferFormat;
-        PSODesc.GraphicsPipeline.PrimitiveTopology = PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+        GraphicsPipeline.DepthStencilDesc.DepthFunc = COMPARISON_FUNC_GREATER_EQUAL;
 
-        mDevice->CreatePipelineState(PSOCreateInfo, &mSkyboxPSO);
+        PSOCreateInfo.pVS = vs;
+        PSOCreateInfo.pPS = ps;
+
+        GraphicsPipeline.RTVFormats[0]     = mSwapChain->GetDesc().ColorBufferFormat;
+        GraphicsPipeline.NumRenderTargets  = 1;
+        GraphicsPipeline.DSVFormat         = mSwapChain->GetDesc().DepthBufferFormat;
+        GraphicsPipeline.PrimitiveTopology = PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+
+        mDevice->CreateGraphicsPipelineState(PSOCreateInfo, &mSkyboxPSO);
         mSkyboxPSO->GetStaticVariableByName(SHADER_TYPE_VERTEX, "SkyboxConstantBuffer")->Set(mSkyboxConstantBuffer);
         mSkyboxPSO->GetStaticVariableByName(SHADER_TYPE_PIXEL, "Skybox")->Set(mSkyboxSRV);
         mSkyboxPSO->CreateShaderResourceBinding(&mSkyboxSRB, true);
@@ -524,8 +529,9 @@ Asteroids::Asteroids(const Settings& settings, AsteroidsSimulation* asteroids, G
 
     // Sprites and fonts
     {
-        PipelineStateCreateInfo PSOCreateInfo;
-        PipelineStateDesc&      PSODesc = PSOCreateInfo.PSODesc;
+        GraphicsPipelineStateCreateInfo PSOCreateInfo;
+        PipelineStateDesc&              PSODesc          = PSOCreateInfo.PSODesc;
+        GraphicsPipelineDesc&           GraphicsPipeline = PSOCreateInfo.GraphicsPipeline;
 
         // clang-format off
         LayoutElement inputDesc[] =
@@ -535,11 +541,11 @@ Asteroids::Asteroids(const Settings& settings, AsteroidsSimulation* asteroids, G
         };
         // clang-format on
 
-        PSODesc.GraphicsPipeline.InputLayout.LayoutElements = inputDesc;
-        PSODesc.GraphicsPipeline.InputLayout.NumElements    = _countof(inputDesc);
+        GraphicsPipeline.InputLayout.LayoutElements = inputDesc;
+        GraphicsPipeline.InputLayout.NumElements    = _countof(inputDesc);
 
-        auto& BlendState = PSODesc.GraphicsPipeline.BlendDesc;
         {
+            auto& BlendState = GraphicsPipeline.BlendDesc;
             // Premultiplied over blend
             BlendState.RenderTargets[0].BlendEnable = TRUE;
             BlendState.RenderTargets[0].SrcBlend    = BLEND_FACTOR_ONE;
@@ -547,12 +553,12 @@ Asteroids::Asteroids(const Settings& settings, AsteroidsSimulation* asteroids, G
             BlendState.RenderTargets[0].DestBlend   = BLEND_FACTOR_INV_SRC_ALPHA;
         }
 
-        PSODesc.GraphicsPipeline.DepthStencilDesc.DepthEnable = false;
+        GraphicsPipeline.DepthStencilDesc.DepthEnable = false;
 
-        PSODesc.GraphicsPipeline.RTVFormats[0]     = mSwapChain->GetDesc().ColorBufferFormat;
-        PSODesc.GraphicsPipeline.NumRenderTargets  = 1;
-        PSODesc.GraphicsPipeline.DSVFormat         = mSwapChain->GetDesc().DepthBufferFormat;
-        PSODesc.GraphicsPipeline.PrimitiveTopology = PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+        GraphicsPipeline.RTVFormats[0]     = mSwapChain->GetDesc().ColorBufferFormat;
+        GraphicsPipeline.NumRenderTargets  = 1;
+        GraphicsPipeline.DSVFormat         = mSwapChain->GetDesc().DepthBufferFormat;
+        GraphicsPipeline.PrimitiveTopology = PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
 
         RefCntAutoPtr<IShader> sprite_vs, sprite_ps, font_ps;
         {
@@ -593,15 +599,15 @@ Asteroids::Asteroids(const Settings& settings, AsteroidsSimulation* asteroids, G
 
         PSODesc.Name                               = "Sprite PSO";
         PSODesc.ResourceLayout.DefaultVariableType = SHADER_RESOURCE_VARIABLE_TYPE_DYNAMIC;
-        PSODesc.GraphicsPipeline.pVS               = sprite_vs;
-        PSODesc.GraphicsPipeline.pPS               = sprite_ps;
-        mDevice->CreatePipelineState(PSOCreateInfo, &mSpritePSO);
+        PSOCreateInfo.pVS                          = sprite_vs;
+        PSOCreateInfo.pPS                          = sprite_ps;
+        mDevice->CreateGraphicsPipelineState(PSOCreateInfo, &mSpritePSO);
         mSpritePSO->CreateShaderResourceBinding(&mSpriteSRB, true);
 
         PSODesc.Name                               = "Font PSO";
         PSODesc.ResourceLayout.DefaultVariableType = SHADER_RESOURCE_VARIABLE_TYPE_STATIC;
-        PSODesc.GraphicsPipeline.pPS               = font_ps;
-        mDevice->CreatePipelineState(PSOCreateInfo, &mFontPSO);
+        PSOCreateInfo.pPS                          = font_ps;
+        mDevice->CreateGraphicsPipelineState(PSOCreateInfo, &mFontPSO);
         mFontPSO->GetStaticVariableByName(SHADER_TYPE_PIXEL, "Tex")->Set(mFontTextureSRV);
         mFontPSO->CreateShaderResourceBinding(&mFontSRB, true);
     }
